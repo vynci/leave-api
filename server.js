@@ -44,24 +44,32 @@ const leaves = [
     date: new Date(2022, 0, 14).getTime(),
     type: "Sick",
     notes: "Headache and Fever",
+    dateCreated: new Date(2022, 0, 14).getTime(),
+    dateUpdated: new Date(2022, 0, 14).getTime(),
   },
   {
     username: "kmg@noaya.no",
     date: new Date(2022, 5, 10).getTime(),
     type: "Vacation",
     notes: "N/A",
+    dateCreated: new Date(2022, 0, 14).getTime(),
+    dateUpdated: new Date(2022, 0, 14).getTime(),
   },
   {
     username: "kmg@noaya.no",
     date: new Date(2022, 0, 12).getTime(),
     type: "Emergency",
     notes: "Family Emergency",
+    dateCreated: new Date(2022, 0, 14).getTime(),
+    dateUpdated: new Date(2022, 0, 14).getTime(),
   },
   {
     username: "jla@noaya.no",
     date: new Date(2022, 0, 12).getTime(),
     type: "Sick",
     notes: "Headache and Fever",
+    dateCreated: new Date(2022, 0, 14).getTime(),
+    dateUpdated: new Date(2022, 0, 14).getTime(),
   },
 ];
 
@@ -183,29 +191,37 @@ app.delete("/user/:username", (req, res) => {
       break;
     }
   }
-  if (prevLength === users.length) res.send({ status: "failed" });
+  if (prevLength === users.length) res.status(401).send({ status: "failed" });
   res.send({ message: "Successfully deleted", status: "success" });
 });
 
 // leave
-// set user leave TODO
+// set user leave
 app.get("/leave/:username", (req, res) => {
-  const { username, password } = req.body;
-
-  //success
-  res.send({ token: "sample token" });
-
-  //failed
+  const { username } = req.params;
+  const employeeLeaves = [];
+  leaves.map((leave) => {
+    if (leave.username === username) {
+      employeeLeaves.push(leave);
+    }
+  });
+  if (employeeLeaves == null) res.status(401).send({ status: "failed" });
+  res.send({ employeeLeaves, status: "success" });
 });
 
 // add user leave TODO
 app.post("/leave/:username", (req, res) => {
-  const { username, password } = req.body;
-
-  //success
-  res.send({ token: "sample token" });
-
-  //failed
+  const { date, type, notes } = req.body;
+  const leave = {
+    username: req.params.username,
+    date: date,
+    type: type,
+    notes: notes,
+    dateCreated: new Date().getTime(),
+    dateUpdated: new Date().getTime(),
+  };
+  leaves.push(leave);
+  res.send({ leave, status: "success" });
 });
 
 function comparePassword(inputPassword, userPassword) {
