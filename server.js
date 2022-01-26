@@ -5,9 +5,13 @@ bcrypt = require("bcrypt");
 const app = express();
 const port = process.env.PORT || 3000;
 
+const ACCESS_TOKEN = "6956a3cdb0d39855ad9b6acea7eaa7fae374461f";
+const REFRESH_TOKEN = "6d9dcdc21ccf34410954067b50514520fba45af2";
+
 app.use(express.json());
 
-const users = [
+let refreshTokens = [];
+let users = [
   // list of employees
   {
     firstName: "J.C. James",
@@ -37,7 +41,7 @@ const users = [
     dateUpdated: new Date(2022, 0, 14).getTime(),
   },
 ];
-const leaves = [
+let leaves = [
   // list of leaves
   {
     username: "kmg@noaya.no",
@@ -74,23 +78,31 @@ const leaves = [
 ];
 
 //check token
-app.use(function (req, res, next) {
+function authenticateUser(req, res, next) {
   if (req.headers && req.headers.authorization) {
     // decode token
     jwt.verify(
-      req.headers.authorization,
-      "RESTFULAPIs",
+      req.headers.authorization.split(" ")[1],
+      ACCESS_TOKEN,
       function (err, decode) {
-        if (err) req.user = undefined;
+        if (err) {
+          req.user = undefined;
+          return res.status(403).send({ message: "access token expired!" });
+        }
         req.user = decode;
         next();
       }
     );
   } else {
     req.user = undefined;
-    next();
+    return res.status(401).send({ message: "no token found!" });
   }
-});
+}
+
+// create access token
+function generateAccessToken(user) {
+  return jwt.sign(user, ACCESS_TOKEN, { expiresIn: "10m" });
+}
 
 // Login
 app.post("/account/authenticate", (req, res) => {
@@ -105,7 +117,8 @@ app.post("/account/authenticate", (req, res) => {
     });
   }
   return res.send({
-    token: jwt.sign(user, "RESTFULAPIs"),
+    accessToken: generateAccessToken(user),
+    refreshToken: jwt.sign(user, REFRESH_TOKEN),
   });
 });
 
@@ -122,11 +135,11 @@ app.post("/account/change-password", (req, res) => {
   const hash_password = bcrypt.hashSync(newPassword, 10);
   user.password = hash_password;
   user.dateUpdated = new Date().getTime();
-  res.send({ user, token: jwt.sign(user, "RESTFULAPIs"), status: "success" });
+  res.send({ user, token: jwt.sign(user, ACCESS_TOKEN), status: "success" });
 });
 
 // get users
-app.get("/user", (req, res) => {
+app.get("/user", authenticateUser, (req, res) => {
   if (users) {
     res.send({ users, count: users.length });
     next();
@@ -138,7 +151,7 @@ app.get("/user", (req, res) => {
 });
 
 // get user
-app.get("/user/:username", (req, res) => {
+app.get("/user/:username", authenticateUser, (req, res) => {
   const user = users.find((user) => user.username === req.params.username);
   if (!user)
     return res
@@ -155,7 +168,6 @@ app.post("/user", (req, res) => {
     firstName: firstName,
     lastName: lastName,
     username: username,
-    position: position,
     password: hash_password,
     dateCreated: new Date().getTime(),
     dateUpdated: new Date().getTime(),
@@ -179,25 +191,20 @@ app.put("/user/:username", (req, res) => {
   user.password = hash_password;
   user.dateUpdated = new Date().getTime();
 
-  res.send({ user, token: jwt.sign(user, "RESTFULAPIs") });
+  res.send({ user, token: jwt.sign(user, ACCESS_TOKEN) });
 });
 
 // delete user
 app.delete("/user/:username", (req, res) => {
   const prevLength = users.length;
-  for (var i = users.length - 1; i >= 0; --i) {
-    if (users[i].username == req.params.username) {
-      users.splice(i, 1);
-      break;
-    }
-  }
+  users = users.filter((user) => user.username !== req.params.username);
   if (prevLength === users.length) res.status(401).send({ status: "failed" });
   res.send({ message: "Successfully deleted", status: "success" });
 });
 
 // leave
 // set user leave
-app.get("/leave/:username", (req, res) => {
+app.get("/leave/:username", authenticateUser, (req, res) => {
   const { username } = req.params;
   const employeeLeaves = [];
   leaves.map((leave) => {
@@ -209,7 +216,7 @@ app.get("/leave/:username", (req, res) => {
   res.send({ employeeLeaves, status: "success" });
 });
 
-// add user leave TODO
+// add user leave
 app.post("/leave/:username", (req, res) => {
   const { date, type, notes } = req.body;
   const leave = {
