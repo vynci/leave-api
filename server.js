@@ -104,6 +104,27 @@ function generateAccessToken(user) {
   return jwt.sign(user, ACCESS_TOKEN, { expiresIn: "10m" });
 }
 
+app.post("/account/token", (req, res) => {
+  const { refreshToken } = req.body;
+  if (refreshToken == null)
+    return res.status(401).send({ message: "no refresh token!" });
+  if (!refreshTokens.includes(refreshToken))
+    return res.status(401).send({ message: "invalid refresh token!" });
+  jwt.verify(refreshToken, REFRESH_TOKEN, (err, decode) => {
+    if (err) return res.status(401).send({ message: "refresh token expired!" });
+    const user = {
+      firstName: decode.firstName,
+      lastName: decode.lastName,
+      username: decode.username,
+      dateCreated: decode.dateCreated,
+      dateUpdated: decode.dateUpdated,
+    };
+    res.send({
+      accessToken: generateAccessToken(user),
+    });
+  });
+});
+
 // Login
 app.post("/account/authenticate", (req, res) => {
   const { username, password } = req.body;
@@ -116,9 +137,11 @@ app.post("/account/authenticate", (req, res) => {
       message: "Authentication failed. Invalid user or password.",
     });
   }
-  return res.send({
+  const refreshToken = jwt.sign(user, REFRESH_TOKEN);
+  refreshTokens.push(refreshToken);
+  res.send({
     accessToken: generateAccessToken(user),
-    refreshToken: jwt.sign(user, REFRESH_TOKEN),
+    refreshToken: refreshToken,
   });
 });
 
@@ -136,6 +159,14 @@ app.post("/account/change-password", (req, res) => {
   user.password = hash_password;
   user.dateUpdated = new Date().getTime();
   res.send({ user, token: jwt.sign(user, ACCESS_TOKEN), status: "success" });
+});
+
+// logout account
+app.delete("/account/logout", (req, res) => {
+  refreshTokens = refreshTokens.filter(
+    (token) => token !== req.body.refreshToken
+  );
+  res.send({ status: "success" });
 });
 
 // get users
