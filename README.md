@@ -73,3 +73,4 @@ Inspiration, code snippets, etc.
 - [How to Create a Simple REST API using TypeScript and Node.js](https://www.section.io/engineering-education/how-to-create-a-simple-rest-api-using-typescript-and-nodejs/)
 - [README template](https://gist.github.com/DomPizzie/7a5ff55ffa9081f2de27c315f5018afc#project-title)
 - [RESTful APIs in 100 Seconds](https://www.youtube.com/watch?v=-MTSQjw5DrM)
+- [JSONWebToken](https://jwt.io/)
