@@ -10,7 +10,7 @@ API for noaya leave management website.
 npm install typescript ts-node express @types/express nodemon
 ```
 
-### routes
+### Routes
 
 - Account
   - Login Account
