@@ -1,0 +1,7 @@
+1. README
+2. Separate functions in different files (Separation of concern)
+3. Implement typescript/
+4. Add routes for first person perspective (account and leaves)
+5. mongodb
+6. implement API routes in frontend
+7. implement frontend for employee
