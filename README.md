@@ -7,7 +7,7 @@ API for noaya leave management website.
 ### Dependencies
 
 ```
-npm install typescript ts-node express @types/express nodemon
+npm install typescript ts-node express @types/express nodemon bycrypt @types/bycrypt mongodb
 ```
 
 ### Routes
@@ -74,3 +74,4 @@ Inspiration, code snippets, etc.
 - [README template](https://gist.github.com/DomPizzie/7a5ff55ffa9081f2de27c315f5018afc#project-title)
 - [RESTful APIs in 100 Seconds](https://www.youtube.com/watch?v=-MTSQjw5DrM)
 - [JSONWebToken](https://jwt.io/)
+- [How to Use TypeScript with MongoDB Atlas](https://www.mongodb.com/compatibility/using-typescript-with-mongodb-tutorial)

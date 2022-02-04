@@ -8,6 +8,10 @@ router.get(
   accountVerification.authenticateUser,
   controller.getUserLeave
 );
-router.post("/employee/leave", controller.getUserLeave);
+router.post(
+  "/employee/leave",
+  accountVerification.authenticateUser,
+  controller.addUserLeave
+);
 
 export = router;

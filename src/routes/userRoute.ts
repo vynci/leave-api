@@ -13,8 +13,16 @@ router.get(
   accountVerification.authenticateUser,
   controller.getUser
 );
-router.post("/user", controller.addUser);
-router.put("/user/:username", controller.updateUser);
-router.delete("/user/:username", controller.deleteUser);
+router.post("/user", accountVerification.authenticateUser, controller.addUser);
+router.put(
+  "/user/:username",
+  accountVerification.authenticateUser,
+  controller.updateUser
+);
+router.delete(
+  "/user/:username",
+  accountVerification.authenticateUser,
+  controller.deleteUser
+);
 
 export = router;
