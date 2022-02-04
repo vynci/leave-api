@@ -85,21 +85,13 @@ const generateAccessToken = async (req: Request, res: Response) => {
   )) as unknown as RefreshToken;
   if (!token)
     return res.status(401).send({ message: "invalid refresh token!" });
-  const decode = jwtConfig.decodeJwtRefresh(refreshToken);
+  const decode = jwtConfig.decodeJwtRefresh(refreshToken) as User;
 
   if (decode == null)
     return res.status(401).send({ message: "refresh token expired!" });
 
-  const user = {
-    firstName: decode.firstName,
-    lastName: decode.lastName,
-    username: decode.username,
-    dateCreated: decode.dateCreated,
-    dateUpdated: decode.dateUpdated,
-  };
-
   res.send({
-    accessToken: jwtConfig.generateAccessToken(user),
+    accessToken: jwtConfig.generateAccessToken(decode),
   });
 };
 

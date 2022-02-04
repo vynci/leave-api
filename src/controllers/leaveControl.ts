@@ -4,22 +4,20 @@ import jwtConfig from "../common/jwtConfig";
 
 import { collections } from "../services/database.service";
 
-// getting user leave
-const getUserLeave = async (req: Request, res: Response) => {
+// getting user leave (admin)
+const getUserLeaveAdmin = async (req: Request, res: Response) => {
   const { username } = req.params;
-
-  try {
-    const query = { username: username };
-    const employeeLeaves = (await collections.leaves
-      ?.find(query)
-      .toArray()) as unknown as Leave[];
-    if (employeeLeaves == null) res.status(401).send({ status: "failed" });
-    res.send({ employeeLeaves, status: "success" });
-  } catch (error) {
-    return res.status(401).send({ status: "failed" });
-  }
+  getUserLeave(req, res, username);
 };
-
+// getting user leave (employee)
+const getUserLeaveEmployee = async (req: Request, res: Response) => {
+  if (req.headers && req.headers.authorization) {
+    let user: any;
+    user = jwtConfig.decodeJwt(req.headers.authorization.split(" ")[1]);
+    getUserLeave(req, res, user.username);
+  }
+  return res.status(401).send({ message: "no token found!" });
+};
 // creating user leave
 const addUserLeave = async (req: Request, res: Response) => {
   const { date, type, notes } = req.body;
@@ -54,4 +52,17 @@ const addUserLeave = async (req: Request, res: Response) => {
   }
 };
 
-export default { getUserLeave, addUserLeave };
+const getUserLeave = async (req: Request, res: Response, username: string) => {
+  try {
+    const query = { username: username };
+    const employeeLeaves = (await collections.leaves
+      ?.find(query)
+      .toArray()) as unknown as Leave[];
+    if (employeeLeaves == null) res.status(401).send({ status: "failed" });
+    return res.send({ employeeLeaves, status: "success" });
+  } catch (error) {
+    return res.status(401).send({ status: "failed" });
+  }
+};
+
+export default { getUserLeaveAdmin, getUserLeaveEmployee, addUserLeave };

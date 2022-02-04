@@ -6,7 +6,12 @@ const router = express.Router();
 router.get(
   "/leave/:username",
   accountVerification.authenticateUser,
-  controller.getUserLeave
+  controller.getUserLeaveAdmin
+);
+router.get(
+  "/employee/leave",
+  accountVerification.authenticateUser,
+  controller.getUserLeaveEmployee
 );
 router.post(
   "/employee/leave",

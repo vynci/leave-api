@@ -37,6 +37,7 @@ function generateAccessToken(user: any) {
   return jwt.sign(user, tokens.ACCESS_TOKEN, { expiresIn: "10m" });
 }
 
+// creating refresh token
 function generateRefreshToken(user: any) {
   return jwt.sign(user, tokens.REFRESH_TOKEN);
 }

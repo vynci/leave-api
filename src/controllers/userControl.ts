@@ -66,56 +66,96 @@ const addUser = async (req: Request, res: Response) => {
       .send({ message: "Failed to create a new user.", status: "failed" });
   }
 };
-
-//updating user
-const updateUser = async (req: Request, res: Response) => {
-  const { firstName, lastName, username, position, password, refreshToken } =
-    req.body;
+// updating user (admin)
+const updateUserAdmin = async (req: Request, res: Response) => {
+  const { firstName, lastName, position, password } = req.body;
   const hash_password = bcrypt.hashSync(password, 10);
   const updatedUser = {
     firstName: firstName,
     lastName: lastName,
-    username: username,
     position: position,
     password: hash_password,
     dateUpdated: new Date().getTime(),
   };
-
   try {
-    const query = { username: username };
+    const query = { username: req.params.username };
     // updating user
-    const result = (await collections.users?.updateOne(query, {
+    const result = await collections.users?.updateOne(query, {
       $set: updatedUser,
-    })) as unknown as User;
+    });
 
     if (result) {
       // getting user
       const user = (await collections.users?.findOne(query)) as unknown as User;
-      // creating refresh token
-      const newRefreshToken = jwtConfig.generateRefreshToken(user);
-      // updating refresh token
-      const updateReresh = { token: newRefreshToken };
-      const tokenQuery = { token: refreshToken };
-      await collections.refreshTokens?.updateOne(tokenQuery, {
-        $set: updateReresh,
-      });
       return res.send({
         user,
-        accessToken: jwtConfig.generateAccessToken(user),
-        refreshToken: jwtConfig.generateRefreshToken(user),
         status: "success",
       });
     }
     res.status(304).send({
-      message: `User with username: ${username} not updated`,
+      message: `User with username: ${req.params.username} not updated`,
       status: "failed",
     });
   } catch (error) {
     res.status(304).send({
-      message: `User with username: ${username} not updated`,
+      message: `User with username: ${req.params.username} not updated`,
       status: "failed",
     });
   }
+};
+
+// updating user (employee)
+const updateUserEmployee = async (req: Request, res: Response) => {
+  // checking auth header
+  if (req.headers && req.headers.authorization) {
+    let user: any;
+    user = jwtConfig.decodeJwt(req.headers.authorization.split(" ")[1]);
+    const { firstName, lastName, position, refreshToken } = req.body;
+    const updatedUser = {
+      firstName: firstName,
+      lastName: lastName,
+      position: position,
+      dateUpdated: new Date().getTime(),
+    };
+    try {
+      const query = { username: user.username };
+      // updating user
+      const result = await collections.users?.updateOne(query, {
+        $set: updatedUser,
+      });
+
+      if (result) {
+        // getting user
+        const user = (await collections.users?.findOne(
+          query
+        )) as unknown as User;
+        // creating refresh token
+        const newRefreshToken = jwtConfig.generateRefreshToken(user);
+        // updating refresh token
+        const updateReresh = { token: newRefreshToken };
+        const tokenQuery = { token: refreshToken };
+        await collections.refreshTokens?.updateOne(tokenQuery, {
+          $set: updateReresh,
+        });
+        return res.send({
+          user,
+          accessToken: jwtConfig.generateAccessToken(user),
+          refreshToken: jwtConfig.generateRefreshToken(user),
+          status: "success",
+        });
+      }
+      res.status(304).send({
+        message: `User with username: ${user.username} not updated`,
+        status: "failed",
+      });
+    } catch (error) {
+      res.status(304).send({
+        message: `User with username: ${user.username} not updated`,
+        status: "failed",
+      });
+    }
+  }
+  return res.status(401).send({ message: "no token found!" });
 };
 
 // deleting user
@@ -148,4 +188,11 @@ const deleteUser = async (req: Request, res: Response) => {
   }
 };
 
-export default { getAllUsers, getUser, addUser, updateUser, deleteUser };
+export default {
+  getAllUsers,
+  getUser,
+  addUser,
+  updateUserAdmin,
+  updateUserEmployee,
+  deleteUser,
+};

@@ -17,7 +17,12 @@ router.post("/user", accountVerification.authenticateUser, controller.addUser);
 router.put(
   "/user/:username",
   accountVerification.authenticateUser,
-  controller.updateUser
+  controller.updateUserAdmin
+);
+router.put(
+  "/employee/user",
+  accountVerification.authenticateUser,
+  controller.updateUserEmployee
 );
 router.delete(
   "/user/:username",

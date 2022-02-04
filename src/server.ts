@@ -47,7 +47,7 @@ connectToDatabase()
 
     /** Server */
     const httpServer = http.createServer(router);
-    const PORT: any = process.env.PORT || 3000;
+    const PORT: any = process.env.PORT || 4000;
     httpServer.listen(PORT, () =>
       console.log(`The server is running on port ${PORT}`)
     );
