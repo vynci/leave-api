@@ -7,7 +7,7 @@ API for noaya leave management website.
 ### Dependencies
 
 ```
-npm install typescript ts-node express @types/express nodemon bycrypt @types/bycrypt mongodb
+npm install typescript ts-node express @types/express morgan @types/morgan nodemon bycrypt @types/bycrypt mongodb
 ```
 
 ### Routes
