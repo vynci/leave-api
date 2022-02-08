@@ -40,7 +40,7 @@ const addUserLeave = async (req: Request, res: Response) => {
             message: `Successfully created a new leave with id ${result.insertedId}`,
             status: "success",
           })
-        : res.status(500).send({
+        : res.send({
             message: "Failed to create a new leave.",
             status: "failed",
           });

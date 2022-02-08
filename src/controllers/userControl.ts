@@ -104,7 +104,7 @@ const updateUserEmployee = async (req: Request, res: Response) => {
   if (req.headers && req.headers.authorization) {
     let user: any;
     user = jwtConfig.decodeJwt(req.headers.authorization.split(" ")[1]);
-    const { firstName, lastName, position, refreshToken } = req.body;
+    const { firstName, lastName, position } = req.body;
     const updatedUser = {
       firstName: firstName,
       lastName: lastName,
@@ -123,18 +123,9 @@ const updateUserEmployee = async (req: Request, res: Response) => {
         const user = (await collections.users?.findOne(
           query
         )) as unknown as User;
-        // creating refresh token
-        const newRefreshToken = jwtConfig.generateRefreshToken(user);
-        // updating refresh token
-        const updateReresh = { token: newRefreshToken };
-        const tokenQuery = { token: refreshToken };
-        await collections.refreshTokens?.updateOne(tokenQuery, {
-          $set: updateReresh,
-        });
         return res.send({
           user,
           accessToken: jwtConfig.generateAccessToken(user),
-          refreshToken: jwtConfig.generateRefreshToken(user),
           status: "success",
         });
       }
