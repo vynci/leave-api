@@ -16,8 +16,8 @@ const accountLogin = async (req: Request, res: Response) => {
     const user = (await collections.users?.findOne(query)) as unknown as User;
     console.log(user);
     if (!user || !passwordConfig.comparePassword(password, user.password)) {
-      return res.status(401).send({
-        message: "Authentication failed. Invalid user or password.",
+      return res.send({
+        message: "Authentication failed. Invalid username or password.",
       });
     }
     const refreshToken = jwtConfig.generateRefreshToken(user);

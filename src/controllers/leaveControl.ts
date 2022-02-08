@@ -16,7 +16,7 @@ const getUserLeaveEmployee = async (req: Request, res: Response) => {
     user = jwtConfig.decodeJwt(req.headers.authorization.split(" ")[1]);
     getUserLeave(req, res, user.username);
   }
-  return res.status(401).send({ message: "no token found!" });
+  return res.send({ message: "no token found!" });
 };
 // creating user leave
 const addUserLeave = async (req: Request, res: Response) => {
@@ -45,10 +45,10 @@ const addUserLeave = async (req: Request, res: Response) => {
             status: "failed",
           });
     }
-    return res.status(401).send({ message: "no token found!" });
+    return res.send({ message: "no token found!" });
   } catch (error) {
     console.error(error);
-    res.status(400).send({ status: "failed" });
+    res.send({ status: "failed" });
   }
 };
 
@@ -58,10 +58,10 @@ const getUserLeave = async (req: Request, res: Response, username: string) => {
     const employeeLeaves = (await collections.leaves
       ?.find(query)
       .toArray()) as unknown as Leave[];
-    if (employeeLeaves == null) res.status(401).send({ status: "failed" });
+    if (employeeLeaves == null) res.send({ status: "failed" });
     return res.send({ employeeLeaves, status: "success" });
   } catch (error) {
-    return res.status(401).send({ status: "failed" });
+    return res.send({ status: "failed" });
   }
 };
 

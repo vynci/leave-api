@@ -11,12 +11,9 @@ const getAllUsers = async (req: Request, res: Response) => {
       ?.find({})
       .toArray()) as unknown as User[];
     if (users) res.send({ data: users, count: users.length });
-    else
-      return res
-        .status(401)
-        .send({ message: "No users found!", status: "failed" });
+    else return res.send({ message: "No users found!", status: "failed" });
   } catch (error) {
-    res.status(500).send({ status: "failed" });
+    res.send({ status: "failed" });
   }
 };
 
@@ -30,9 +27,10 @@ const getUser = async (req: Request, res: Response) => {
       res.send({ user, status: "success" });
     }
   } catch (error) {
-    return res
-      .status(401)
-      .send({ message: req.params.username + " not found!", status: "failed" });
+    return res.send({
+      message: req.params.username + " not found!",
+      status: "failed",
+    });
   }
 };
 
@@ -53,17 +51,13 @@ const addUser = async (req: Request, res: Response) => {
     const result = await collections.users?.insertOne(user);
 
     result
-      ? res.status(201).send({
+      ? res.send({
           message: `Successfully created a new user with id ${result.insertedId}`,
           status: "success",
         })
-      : res
-          .status(500)
-          .send({ message: "Failed to create a new user.", status: "failed" });
+      : res.send({ message: "Failed to create a new user.", status: "failed" });
   } catch (error) {
-    res
-      .status(400)
-      .send({ message: "Failed to create a new user.", status: "failed" });
+    res.send({ message: "Failed to create a new user.", status: "failed" });
   }
 };
 // updating user (admin)
@@ -92,12 +86,12 @@ const updateUserAdmin = async (req: Request, res: Response) => {
         status: "success",
       });
     }
-    res.status(304).send({
+    res.send({
       message: `User with username: ${req.params.username} not updated`,
       status: "failed",
     });
   } catch (error) {
-    res.status(304).send({
+    res.send({
       message: `User with username: ${req.params.username} not updated`,
       status: "failed",
     });
@@ -144,18 +138,18 @@ const updateUserEmployee = async (req: Request, res: Response) => {
           status: "success",
         });
       }
-      res.status(304).send({
+      res.send({
         message: `User with username: ${user.username} not updated`,
         status: "failed",
       });
     } catch (error) {
-      res.status(304).send({
+      res.send({
         message: `User with username: ${user.username} not updated`,
         status: "failed",
       });
     }
   }
-  return res.status(401).send({ message: "no token found!" });
+  return res.send({ message: "no token found!" });
 };
 
 // deleting user
@@ -165,23 +159,23 @@ const deleteUser = async (req: Request, res: Response) => {
     const result = await collections.users?.deleteOne(query);
 
     if (result && result.deletedCount) {
-      res.status(202).send({
+      res.send({
         message: `Successfully removed user ${req.params.username}`,
         status: "success",
       });
     } else if (!result) {
-      res.status(400).send({
+      res.send({
         message: `Failed to remove user with id ${req.params.username}`,
         status: "failed",
       });
     } else if (!result.deletedCount) {
-      res.status(404).send({
+      res.send({
         message: `Game with id ${req.params.username} does not exist`,
         status: "failed",
       });
     }
   } catch (error) {
-    res.status(400).send({
+    res.send({
       message: `Failed to remove user with id ${req.params.username}`,
       status: "failed",
     });

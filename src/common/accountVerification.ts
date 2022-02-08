@@ -9,10 +9,10 @@ function authenticateUser(req: Request, res: Response, next: NextFunction) {
 
     console.log("result ", result);
     if (result == null) {
-      return res.status(403).send({ message: "access token expired!" });
+      return res.send({ message: "access token expired!" });
     }
     next();
-  } else return res.status(401).send({ message: "no token found!" });
+  } else return res.send({ message: "no token found!" });
 }
 
 export default { authenticateUser };

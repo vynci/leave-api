@@ -42,18 +42,26 @@ npm install typescript ts-node express @types/express morgan @types/morgan nodem
   ```
   POST ~/user
   ```
-  - Update User
+  - Update User(admin)
   ```
   PUT ~/user/:username
+  ```
+  - Update User(employee)
+  ```
+  PUT ~/employee/user
   ```
   - Delete User
   ```
   DELETE ~/user/:username
   ```
 - leaves
-  - Get User Leave
+  - Get User Leave(admin)
   ```
   GET ~/leave/:username
+  ```
+  - Get User Leave(employee)
+  ```
+  GET ~/employee/leave
   ```
   - Create User leave
   ```
