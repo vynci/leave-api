@@ -7,10 +7,10 @@ function authenticateUser(req: Request, res: Response, next: NextFunction) {
     // decode token
     const result = jwtConfig.decodeJwt(req.headers.authorization.split(" ")[1]);
     if (result == null) {
-      return res.send({ message: "access token expired!" });
+      return res.send({ authmessage: "access token expired!" });
     }
     next();
-  } else return res.send({ message: "no token found!" });
+  } else return res.send({ authmessage: "no token found!" });
 }
 
 export default { authenticateUser };
