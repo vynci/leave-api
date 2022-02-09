@@ -23,7 +23,7 @@ function decodeJwt(token: string) {
 
 // create access token
 function generateAccessToken(user: any) {
-  return jwt.sign(user, tokens.ACCESS_TOKEN, { expiresIn: "10m" });
+  return jwt.sign(user, tokens.ACCESS_TOKEN);
 }
 
 export default {

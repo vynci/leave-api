@@ -24,7 +24,7 @@ const getUser = async (req: Request, res: Response) => {
     const user = (await collections.users?.findOne(query)) as unknown as User;
 
     if (user) {
-      res.send({ user, status: "success" });
+      return res.send({ user, status: "success" });
     }
   } catch (error) {
     return res.send({
@@ -40,7 +40,7 @@ const getUserEmployee = async (req: Request, res: Response) => {
       let user: any;
       user = jwtConfig.decodeJwt(req.headers.authorization.split(" ")[1]);
       if (user) {
-        res.send({ user, status: "success" });
+        return res.send({ user, status: "success" });
       }
     }
   } catch (error) {
@@ -67,14 +67,22 @@ const addUser = async (req: Request, res: Response) => {
     };
     const result = await collections.users?.insertOne(user);
 
-    result
-      ? res.send({
-          message: `Successfully created a new user with id ${result.insertedId}`,
-          status: "success",
-        })
-      : res.send({ message: "Failed to create a new user.", status: "failed" });
+    if (result) {
+      return res.send({
+        message: `Successfully created a new user with id ${result.insertedId}`,
+        status: "success",
+      });
+    } else {
+      return res.send({
+        message: "Failed to create a new user.",
+        status: "failed",
+      });
+    }
   } catch (error) {
-    res.send({ message: "Failed to create a new user.", status: "failed" });
+    return res.send({
+      message: "Failed to create a new user.",
+      status: "failed",
+    });
   }
 };
 // updating user (admin)
@@ -103,12 +111,12 @@ const updateUserAdmin = async (req: Request, res: Response) => {
         status: "success",
       });
     }
-    res.send({
+    return res.send({
       message: `User with username: ${req.params.username} not updated`,
       status: "failed",
     });
   } catch (error) {
-    res.send({
+    return res.send({
       message: `User with username: ${req.params.username} not updated`,
       status: "failed",
     });
@@ -146,12 +154,12 @@ const updateUserEmployee = async (req: Request, res: Response) => {
           status: "success",
         });
       }
-      res.send({
+      return res.send({
         message: `User with username: ${user.username} not updated`,
         status: "failed",
       });
     } catch (error) {
-      res.send({
+      return res.send({
         message: `User with username: ${user.username} not updated`,
         status: "failed",
       });
@@ -167,23 +175,23 @@ const deleteUser = async (req: Request, res: Response) => {
     const result = await collections.users?.deleteOne(query);
 
     if (result && result.deletedCount) {
-      res.send({
+      return res.send({
         message: `Successfully removed user ${req.params.username}`,
         status: "success",
       });
     } else if (!result) {
-      res.send({
+      return res.send({
         message: `Failed to remove user with id ${req.params.username}`,
         status: "failed",
       });
     } else if (!result.deletedCount) {
-      res.send({
+      return res.send({
         message: `Game with id ${req.params.username} does not exist`,
         status: "failed",
       });
     }
   } catch (error) {
-    res.send({
+    return res.send({
       message: `Failed to remove user with id ${req.params.username}`,
       status: "failed",
     });

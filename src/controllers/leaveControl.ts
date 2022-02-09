@@ -1,7 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import Leave from "../models/leaves";
 import jwtConfig from "../common/jwtConfig";
-
 import { collections } from "../services/database.service";
 
 // getting user leave (admin)
@@ -21,9 +20,8 @@ const getUserLeaveEmployee = async (req: Request, res: Response) => {
 // creating user leave
 const addUserLeave = async (req: Request, res: Response) => {
   const { date, type, notes } = req.body;
-
-  try {
-    if (req.headers && req.headers.authorization) {
+  if (req.headers && req.headers.authorization) {
+    try {
       let user: any;
       user = jwtConfig.decodeJwt(req.headers.authorization.split(" ")[1]);
       const leave = {
@@ -35,24 +33,26 @@ const addUserLeave = async (req: Request, res: Response) => {
         dateUpdated: new Date().getTime(),
       };
       const result = await collections.leaves?.insertOne(leave);
-      result
-        ? res.send({
-            message: `Successfully created a new leave with id ${result.insertedId}`,
-            status: "success",
-          })
-        : res.send({
-            message: "Failed to create a new leave.",
-            status: "failed",
-          });
+      if (result) {
+        return res.send({
+          message: `Successfully created a new leave with id ${result.insertedId}`,
+          status: "success",
+        });
+      } else {
+        return res.send({
+          message: "Failed to create a new leave.",
+          status: "failed",
+        });
+      }
+    } catch (error) {
+      console.log(error);
+      return res.send({
+        message: "Failed to create a new leave.",
+        status: "failed",
+      });
     }
-    return res.send({ message: "no token found!" });
-  } catch (error) {
-    console.error(error);
-    res.send({
-      message: "Failed to create a new leave.",
-      status: "failed",
-    });
   }
+  return res.send({ message: "no token found!" });
 };
 
 const getUserLeave = async (req: Request, res: Response, username: string) => {
@@ -61,7 +61,7 @@ const getUserLeave = async (req: Request, res: Response, username: string) => {
     const employeeLeaves = (await collections.leaves
       ?.find(query)
       .toArray()) as unknown as Leave[];
-    if (employeeLeaves == null) res.send({ status: "failed" });
+    if (employeeLeaves == null) return res.send({ status: "failed" });
     return res.send({ employeeLeaves, status: "success" });
   } catch (error) {
     return res.send({ status: "failed" });

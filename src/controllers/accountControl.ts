@@ -19,7 +19,7 @@ const accountLogin = async (req: Request, res: Response) => {
         message: "Authentication failed. Invalid username or password!",
       });
     }
-    res.send({
+    return res.send({
       accessToken: jwtConfig.generateAccessToken(user),
     });
   } catch (err) {
@@ -47,7 +47,7 @@ const changeAccountPassword = async (req: Request, res: Response) => {
     const hash_password = bcrypt.hashSync(newPassword, 10);
     user.password = hash_password;
     user.dateUpdated = new Date().getTime();
-    res.send({
+    return res.send({
       user,
       accesstoken: jwtConfig.generateAccessToken(user),
       status: "success",
