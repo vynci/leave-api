@@ -48,7 +48,10 @@ const addUserLeave = async (req: Request, res: Response) => {
     return res.send({ message: "no token found!" });
   } catch (error) {
     console.error(error);
-    res.send({ status: "failed" });
+    res.send({
+      message: "Failed to create a new leave.",
+      status: "failed",
+    });
   }
 };
 
