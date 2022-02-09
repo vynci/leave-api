@@ -13,6 +13,11 @@ router.get(
   accountVerification.authenticateUser,
   controller.getUser
 );
+router.get(
+  "/employee/user",
+  accountVerification.authenticateUser,
+  controller.getUserEmployee
+);
 router.post("/user", accountVerification.authenticateUser, controller.addUser);
 router.put(
   "/user/:username",

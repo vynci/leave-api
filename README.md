@@ -26,7 +26,11 @@ npm install typescript ts-node express @types/express morgan @types/morgan nodem
   ```
   GET ~/user
   ```
-  - Get User
+  - Get User(account)
+  ```
+  GET ~/employee/user
+  ```
+  - Get User(admin)
   ```
   GET ~/user/:username
   ```

@@ -33,6 +33,23 @@ const getUser = async (req: Request, res: Response) => {
     });
   }
 };
+//getting user(Employee)
+const getUserEmployee = async (req: Request, res: Response) => {
+  try {
+    if (req.headers && req.headers.authorization) {
+      let user: any;
+      user = jwtConfig.decodeJwt(req.headers.authorization.split(" ")[1]);
+      if (user) {
+        res.send({ user, status: "success" });
+      }
+    }
+  } catch (error) {
+    return res.send({
+      message: req.params.username + " not found!",
+      status: "failed",
+    });
+  }
+};
 
 // creating user
 const addUser = async (req: Request, res: Response) => {
@@ -176,6 +193,7 @@ const deleteUser = async (req: Request, res: Response) => {
 export default {
   getAllUsers,
   getUser,
+  getUserEmployee,
   addUser,
   updateUserAdmin,
   updateUserEmployee,
