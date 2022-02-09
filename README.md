@@ -25,10 +25,6 @@ npm install typescript ts-node express @types/express morgan @types/morgan nodem
   ```
   DELETE ~/account/logout
   ```
-  - Regenerate Access Token
-  ```
-  POST ~/account/token
-  ```
 - User
   - Get All Users
   ```
