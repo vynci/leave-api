@@ -6,16 +6,16 @@ import { collections } from "../services/database.service";
 // getting user leave (admin)
 const getUserLeaveAdmin = async (req: Request, res: Response) => {
   const { username } = req.params;
-  getUserLeave(req, res, username);
+  return getUserLeave(req, res, username);
 };
 // getting user leave (employee)
 const getUserLeaveEmployee = async (req: Request, res: Response) => {
   if (req.headers && req.headers.authorization) {
     let user: any;
     user = jwtConfig.decodeJwt(req.headers.authorization.split(" ")[1]);
-    getUserLeave(req, res, user.username);
+    return getUserLeave(req, res, user.username);
   }
-  return res.send({ message: "no token found!" });
+  return res.send({ authmessage: "no token found!" });
 };
 // creating user leave
 const addUserLeave = async (req: Request, res: Response) => {
@@ -35,7 +35,7 @@ const addUserLeave = async (req: Request, res: Response) => {
       const result = await collections.leaves?.insertOne(leave);
       if (result) {
         return res.send({
-          message: `Successfully created a new leave with id ${result.insertedId}`,
+          message: `Successfully created !`,
           status: "success",
         });
       } else {

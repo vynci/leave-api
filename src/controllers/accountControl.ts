@@ -39,10 +39,15 @@ const changeAccountPassword = async (req: Request, res: Response) => {
     const query = { usernme: currentUser.username };
     const user = (await collections.users?.findOne(query)) as unknown as User;
 
-    if (!user) return res.send({ message: "user not found!" });
-
+    if (!user)
+      return res.send({ message: "user not found!", status: "failed" });
+    if (!passwordConfig.comparePassword(oldPassword, user.password))
+      return res.send({ message: "Wrong password!", status: "failed" });
     if (oldPassword === newPassword)
-      return res.send({ message: "Password same with the old password" });
+      return res.send({
+        message: "Password same with the old password",
+        status: "success",
+      });
 
     const hash_password = bcrypt.hashSync(newPassword, 10);
     user.password = hash_password;
@@ -53,7 +58,7 @@ const changeAccountPassword = async (req: Request, res: Response) => {
       status: "success",
     });
   }
-  return res.send({ message: "no token found!" });
+  return res.send({ authmessage: "no token found!" });
 };
 
 export default {
