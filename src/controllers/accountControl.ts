@@ -36,7 +36,7 @@ const changeAccountPassword = async (req: Request, res: Response) => {
   if (req.headers && req.headers.authorization) {
     let currentUser: any;
     currentUser = jwtConfig.decodeJwt(req.headers.authorization.split(" ")[1]);
-    const query = { usernme: currentUser.username };
+    const query = { username: currentUser.username };
     const user = (await collections.users?.findOne(query)) as unknown as User;
 
     if (!user)
@@ -46,7 +46,7 @@ const changeAccountPassword = async (req: Request, res: Response) => {
     if (oldPassword === newPassword)
       return res.send({
         message: "Password same with the old password",
-        status: "success",
+        status: "failed",
       });
 
     const hash_password = bcrypt.hashSync(newPassword, 10);
