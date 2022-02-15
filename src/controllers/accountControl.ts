@@ -52,6 +52,15 @@ const changeAccountPassword = async (req: Request, res: Response) => {
     const hash_password = bcrypt.hashSync(newPassword, 10);
     user.password = hash_password;
     user.dateUpdated = new Date().getTime();
+    const updatedPassword = {
+      password: user.password,
+      dateUpdated: user.dateUpdated,
+    };
+    const query2 = { username: user.username };
+    // updating user
+    await collections.users?.updateOne(query2, {
+      $set: updatedPassword,
+    });
     return res.send({
       user,
       accesstoken: jwtConfig.generateAccessToken(user),
