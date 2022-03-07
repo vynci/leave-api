@@ -87,13 +87,12 @@ const addUser = async (req: Request, res: Response) => {
 };
 // updating user (admin)
 const updateUserAdmin = async (req: Request, res: Response) => {
-  const { firstName, lastName, position, password } = req.body;
-  const hash_password = bcrypt.hashSync(password, 10);
+  const { firstName, lastName, position } = req.body;
+  console.log("firstname: " + firstName);
   const updatedUser = {
     firstName: firstName,
     lastName: lastName,
     position: position,
-    password: hash_password,
     dateUpdated: new Date().getTime(),
   };
   try {
@@ -175,6 +174,7 @@ const deleteUser = async (req: Request, res: Response) => {
     const result = await collections.users?.deleteOne(query);
 
     if (result && result.deletedCount) {
+      await collections.leaves?.deleteMany(query);
       return res.send({
         message: `Successfully removed user ${req.params.username}`,
         status: "success",
